@@ -17,7 +17,7 @@ public class ResultadoView {
 		NeuronioView neuronioView = new NeuronioView("", null);
 		for (int i = 0; i < lista.size(); i++) {
 			char letra = (char) ('A'+i);
-			neuronioView.setDescricao("Neurônio " + letra);
+			neuronioView.setDescricao("Neurï¿½nio " + letra);
 			neuronioView.setNeuronio(lista.get(i));
 			neuronioView.exibir();
 		}

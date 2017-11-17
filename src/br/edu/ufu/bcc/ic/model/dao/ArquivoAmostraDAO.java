@@ -10,12 +10,16 @@ import br.edu.ufu.bcc.ic.model.vo.Amostra;
 
 public class ArquivoAmostraDAO implements AmostraDAO{
 	private static String caminho = "dados/dados.txt";
+        private static String testeCaminho = "dados/teste.txt";
 	private Scanner scanner;
 		
 	@Override
-	public Set<Amostra> getTodos(){
+	public Set<Amostra> getTodos(Boolean teste){
 		try {
-			FileReader arquivo = new FileReader(caminho);
+                        FileReader arquivo;
+                        if(!teste)
+                            arquivo = new FileReader(caminho);
+                        else arquivo = new FileReader(testeCaminho);
 			scanner = new Scanner(arquivo);
 			scanner.useDelimiter(",|\\n");
 			Set<Amostra> conjunto = new HashSet<Amostra>();

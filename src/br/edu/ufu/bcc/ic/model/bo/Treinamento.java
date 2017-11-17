@@ -18,11 +18,13 @@ public class Treinamento {
 	private ConfiguracaoDAO configuracaoDAO = new ArquivoConfiguracaoDAO();
 	private List<Neuronio> neuronios = new ArrayList<Neuronio>();	
 	private Set<Amostra> conjuntoAmostraTreinamento;
+        private Set<Amostra> conjuntoAmostraTeste;
 	private double erroMaximo;
 	private double erro;
 	
 	public Treinamento() {
-		this.conjuntoAmostraTreinamento = amostraDAO.getTodos();
+		this.conjuntoAmostraTreinamento = amostraDAO.getTodos(false);
+                this.conjuntoAmostraTeste = amostraDAO.getTodos(true);
 		NeuronioBuilder neuronioBuilder = new NeuronioBuilder();
 		for (int i = 0; i < 26; i++) {
 			neuronioBuilder.buildPesos();
@@ -43,7 +45,8 @@ public class Treinamento {
 				for (int i = 0; i < neuronios.size(); i++) {
 					Neuronio neuronio = neuronios.get(i);					
 					neuronio.configurar(entrada, saida[i]);
-					neuronio.processar();					
+					neuronio.processar();
+					neuronio.ajustar();			
 				}
 				
 				boolean existeErroAmostra = false;
@@ -59,6 +62,31 @@ public class Treinamento {
 		}	
 	}
 	
+        public void executarTeste() throws IOException {
+		int quantidadeErros;
+		quantidadeErros  = 0;
+		for (Amostra amostra : conjuntoAmostraTeste) {
+                    double[] entrada = amostra.getEntrada();
+                    double[] saida = amostra.getSaida();
+                    for (int i = 0; i < neuronios.size(); i++) {
+                            Neuronio neuronio = neuronios.get(i);					
+                            neuronio.configurar(entrada, saida[i]);
+                            neuronio.processar();			
+                    }
+				
+		boolean existeErroAmostra = false;
+		for (Neuronio neuronio : neuronios)
+			if (neuronio.houveErro()) {
+                            existeErroAmostra = true;
+                            break;
+			}
+		if (existeErroAmostra)
+                    quantidadeErros++;
+		}
+		this.erro = ((double) quantidadeErros/conjuntoAmostraTreinamento.size());	
+	}
+        
+        
 	public List<Neuronio> getNeuronios(){
 		return this.neuronios;
 	}
